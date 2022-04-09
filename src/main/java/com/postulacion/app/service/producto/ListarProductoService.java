@@ -9,5 +9,6 @@ import java.util.List;
 public interface ListarProductoService {
     List<Producto> listarProductos();
     Producto buscarProductoCodigo(String codigo);
+    Producto buscarProductoId(Long id);
 
 }

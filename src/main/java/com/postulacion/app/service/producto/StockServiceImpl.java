@@ -20,7 +20,7 @@ public class StockServiceImpl implements StockService {
         }
 
         int nuevoStock = producto.getStock() + cantidad;
-        if(nuevoStock <= 0){
+        if(nuevoStock < 0){
             throw new BadRequestException("No hay stock suficiente");
         }
         producto.setStock(nuevoStock);

@@ -23,4 +23,9 @@ public class ListarProductoServiceImpl implements ListarProductoService {
         Producto producto = productoRepository.findByCodigo(codigo);
         return producto;
     }
+
+    public Producto buscarProductoId(Long id) {
+        Producto producto = productoRepository.findById(id).orElse(null);
+        return producto;
+    }
 }

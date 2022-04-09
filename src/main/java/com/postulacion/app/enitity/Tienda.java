@@ -13,20 +13,21 @@ import java.util.Set;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Producto {
+public class Tienda {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String codigo;
     private String nombre;
-    private Double precio;
-    private int stock;
+    private String codigo;
 
-    @ManyToMany(mappedBy = "productos")
-    Set<Tienda> tiendas;
+    @ManyToMany
+    @JoinTable(
+            name = "tienda_productos",
+            joinColumns = @JoinColumn(name = "producto_id"),
+            inverseJoinColumns = @JoinColumn(name = "tienda_id"))
+    Set<Producto> productos;
 
     @OneToOne(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private PedidoDetalle pedidoDetalle;
-
 }
