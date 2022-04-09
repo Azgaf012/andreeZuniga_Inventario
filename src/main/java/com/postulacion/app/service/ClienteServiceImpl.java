@@ -14,24 +14,28 @@ public class ClienteServiceImpl implements ClienteService {
     private ClienteRepository clienteRepository;
 
     @Override
-    public boolean crearCliente(Cliente cliente) {
+    public Cliente crearCliente(Cliente cliente) {
         Cliente clienteCreated = clienteRepository.save(cliente);
-        return true;
+        return clienteCreated;
     }
 
     @Override
     public Cliente actualizarCliente(Cliente cliente) {
-        return null;
+        Cliente clienteActualizar = this.obtenerCliente(cliente.getId());
+        clienteActualizar.setNombre(cliente.getNombre());
+        clienteActualizar.setFoto(cliente.getFoto());
+
+        return clienteRepository.save(clienteActualizar);
     }
 
     @Override
-    public Cliente obtenerCliente(String idCliente) {
+    public Cliente obtenerCliente(Long idCliente) {
         Cliente cliente = clienteRepository.findById(idCliente).orElse(null);
         return cliente;
     }
 
     @Override
-    public boolean eliminarCliente(String id) {
+    public boolean eliminarCliente(Long id) {
         Cliente cliente = this.obtenerCliente(id);
         clienteRepository.delete(cliente);
         return true;

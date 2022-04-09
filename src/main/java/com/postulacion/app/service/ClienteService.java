@@ -8,9 +8,9 @@ import java.util.List;
 @Service
 public interface ClienteService {
 
-    boolean crearCliente(Cliente cliente);
+    Cliente crearCliente(Cliente cliente);
     Cliente actualizarCliente(Cliente cliente);
-    Cliente obtenerCliente(String id);
-    boolean eliminarCliente(String id);
+    Cliente obtenerCliente(Long id);
+    boolean eliminarCliente(Long id);
     List<Cliente> listarClientes();
 }
