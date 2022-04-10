@@ -27,11 +27,12 @@ dependencies {
     runtimeOnly 'mysql:mysql-connector-java'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation group: 'org.mockito', name: 'mockito-all', version: '1.10.19'
+    testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: '4.4.0'
 }
 
-test {
-    useJUnit()
+tasks.withType(Test) {
+    useJUnitPlatform()
+    jvmArgs '--enable-preview'
 }
 
 

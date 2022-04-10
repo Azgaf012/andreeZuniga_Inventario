@@ -3,42 +3,51 @@ package com.postulacion.app.service.cliente;
 import com.postulacion.app.enitity.Cliente;
 import com.postulacion.app.repository.ClienteRepository;
 import org.junit.Before;
-
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 class ListarClienteServiceImplTest {
-
-    @InjectMocks
-    private ListarClienteServiceImpl listarClienteService;
 
     @Mock
     private ClienteRepository clienteRepository;
 
-    @Before
-    public void setUp() {
-        initMocks(this);
+    @InjectMocks
+    private ListarClienteServiceImpl listarClienteService;
+
+    @BeforeEach
+    void setUp() {
+        //listarClienteService = new ListarClienteServiceImpl( clienteRepository);
     }
 
     @Test
-    void obtenerCliente() {
-        Cliente cliente = new Cliente("Juan Perez","12312312","");
-        when(clienteRepository.findById(1L)).thenReturn(Optional.of(cliente));
+    void testObtenerCliente() {
+
+        Cliente cliente = mock(Cliente.class);
+        when(clienteRepository.findById(anyLong())).thenReturn(Optional.of(cliente));
 
         assertNotNull(listarClienteService.obtenerCliente(1L));
     }
 
     @Test
-    void listarClientes() {
+    void testListarClientes() {
+        List<Cliente> clientesMock = List.of(mock(Cliente.class), mock(Cliente.class), mock(Cliente.class));
+        when(clienteRepository.findAll()).thenReturn(clientesMock);
+        List<Cliente> clientes = listarClienteService.listarClientes();
+        assertNotNull(clientes);
+        assert(clientes.size() == 3);
     }
 }
