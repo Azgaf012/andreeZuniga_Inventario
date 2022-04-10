@@ -13,6 +13,7 @@ public class ListarClienteServiceImpl implements ListarClienteService {
     @Autowired
     private ClienteRepository clienteRepository;
 
+
     @Override
     public Cliente obtenerCliente(Long idCliente) {
         Cliente cliente = clienteRepository.findById(idCliente).orElse(null);

@@ -70,9 +70,15 @@ public class CrearPedidoServiceImpl implements CrearPedidoService {
 
         Pedido pedidoNuevo = new Pedido();
         pedidoNuevo.setCliente(cliente);
-        pedidoNuevo.setDetalle(detalles);
+        //pedidoNuevo.setDetalle(detalles);
         pedidoNuevo.setTotal(total);
-        pedidoRepository.save(pedidoNuevo);
+        Pedido predidoCreado = pedidoRepository.save(pedidoNuevo);
+        detalles = detalles.stream().map(detalle -> {
+            detalle.setPedido(predidoCreado);
+            return detalle;
+        }).collect(Collectors.toSet());
+        predidoCreado.setDetalle(detalles);
+        pedidoRepository.save(predidoCreado);
     }
 
     private Set<PedidoDetalle> validarPedidoDetalle(Set<PedidoDetalle> detalles, List<String> errores){
@@ -119,9 +125,9 @@ public class CrearPedidoServiceImpl implements CrearPedidoService {
             pedidoDetalle.setProducto(producto);
             pedidoDetalle.setTienda(tienda);
             pedidoDetalle.setCantidad(detalle.getCantidad());
-            pedidoDetalle.setPrecio(detalle.getPrecio());
+            pedidoDetalle.setPrecio(producto.getPrecio());
 
-            pedidoDetalle.setTotal(detalle.getCantidad()*detalle.getPrecio());
+            pedidoDetalle.setTotal(detalle.getCantidad()*producto.getPrecio());
 
             return pedidoDetalle;
 

@@ -1,27 +1,33 @@
 package com.postulacion.app.enitity;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.*;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 @Setter
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
+@RequiredArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler","pedidos"})
 public class Cliente {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @NonNull
     private String nombre;
+
+    @NonNull
     private String identificacion;
+
+    @NonNull
     private String foto;
 
-    @OneToOne(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private Pedido pedido;
+    @OneToMany(mappedBy="cliente")
+    private Set<Pedido> pedidos;
 
 }
