@@ -29,9 +29,6 @@ public class ValidarStockService {
             }
         }
 
-        if(stockProducto-cantidadPedido<0){
-
-        }
         return true;
     }
 

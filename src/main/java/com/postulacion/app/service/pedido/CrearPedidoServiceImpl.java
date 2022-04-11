@@ -55,14 +55,14 @@ public class CrearPedidoServiceImpl implements CrearPedidoService {
             errores.add("El cliente no existe");
         }
 
-        Set<PedidoDetalle> detalles= this.validarPedidoDetalle(pedido.getDetalle(),errores);
+        Set<PedidoDetalle> detalles= this.obtenerPedidoDetalle(pedido.getDetalle(),errores);
 
         if(errores.size() > 0){
             throw new BadRequestException(errores.stream().collect(Collectors.joining("\n")));
         }
 
         detalles.stream().forEach(detalle -> {
-            stockService.actualizarStock(detalle.getProducto().getId(), -detalle.getCantidad());
+            stockService.actualizarStockAsync(detalle.getProducto().getId(), -detalle.getCantidad());
         });
 
         double total = detalles.stream().mapToDouble(detalle -> detalle.getTotal()).sum();
@@ -80,49 +80,20 @@ public class CrearPedidoServiceImpl implements CrearPedidoService {
         pedidoRepository.save(predidoCreado);
     }
 
-    private Set<PedidoDetalle> validarPedidoDetalle(Set<PedidoDetalle> detalles, List<String> errores){
+    private Set<PedidoDetalle> obtenerPedidoDetalle(Set<PedidoDetalle> detalles, List<String> errores){
 
         return detalles.stream().map(detalle -> {
-            if(detalle.getCantidad() <= 0){
-                errores.add("La cantidad debe ser mayor a 0");
-            }
-
-            if(detalle.getProducto()== null || detalle.getProducto().getId() == null || detalle.getTienda()== null || detalle.getTienda().getId() == null){
-                errores.add("No ingreso el producto o tienda en todos los detalles del pedido");
-                return null;
-            }
 
             Producto producto = listarProductoService.buscarProductoId(detalle.getProducto().getId());
-            if(producto == null){
-                errores.add("El producto con id " + detalle.getProducto().getId() +" no existe");
-            }
-
-            Tienda tienda = listarTiendaService.listarTienda(detalle.getTienda().getId());
-
-            if(tienda == null){
-                errores.add("La tienda con id " + detalle.getTienda().getId() +" no existe");
-            }
-
-            if(producto==null || tienda==null || detalle.getCantidad() <= 0){
+            if(!validarDetallePedido(detalle,producto,errores)){
                 return null;
             }
-
-            if(!validarExistenciaProducto.existeProducto(tienda.getId(), producto)){
-                errores.add("El producto " + producto.getNombre() + " no existe en la tienda " + tienda.getNombre());
-                return null;
-            }
-
-            if(!validarStockService.validarStock(producto.getStock(), detalle.getCantidad(),producto.getId())){
-                errores.add("El producto con id " + detalle.getProducto().getId() +" no tiene stock suficiente");
-            }
-
-
 
             PedidoDetalle pedidoDetalle = new PedidoDetalle();
 
             pedidoDetalle.setCantidad(detalle.getCantidad());
-            pedidoDetalle.setProducto(producto);
-            pedidoDetalle.setTienda(tienda);
+            pedidoDetalle.setProducto(detalle.getProducto());
+            pedidoDetalle.setTienda(detalle.getTienda());
             pedidoDetalle.setCantidad(detalle.getCantidad());
             pedidoDetalle.setPrecio(producto.getPrecio());
 
@@ -132,6 +103,42 @@ public class CrearPedidoServiceImpl implements CrearPedidoService {
 
         }).collect(Collectors.toSet());
 
+    }
+
+    private boolean validarDetallePedido(PedidoDetalle detalle,Producto producto, List<String> errores){
+        if(detalle.getCantidad() <= 0){
+            errores.add("La cantidad debe ser mayor a 0");
+        }
+
+        if(detalle.getProducto()== null || detalle.getProducto().getId() == null || detalle.getTienda()== null || detalle.getTienda().getId() == null){
+            errores.add("No ingreso el producto o tienda en todos los detalles del pedido");
+            return false;
+        }
+
+
+        if(producto == null){
+            errores.add("El producto con id " + detalle.getProducto().getId() +" no existe");
+        }
+
+        Tienda tienda = listarTiendaService.listarTienda(detalle.getTienda().getId());
+
+        if(tienda == null){
+            errores.add("La tienda con id " + detalle.getTienda().getId() +" no existe");
+        }
+
+        if(producto==null || tienda==null || detalle.getCantidad() <= 0){
+            return false;
+        }
+
+        if(!validarExistenciaProducto.existeProducto(tienda.getId(), producto)){
+            errores.add("El producto " + producto.getNombre() + " no existe en la tienda " + tienda.getNombre());
+            return false;
+        }
+
+        if(!validarStockService.validarStock(producto.getStock(), detalle.getCantidad(),producto.getId())){
+            errores.add("El producto con id " + detalle.getProducto().getId() +" no tiene stock suficiente");
+        }
+        return true;
     }
 
 
