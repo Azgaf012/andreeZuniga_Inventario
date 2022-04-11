@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -54,8 +55,6 @@ public class CrearPedidoServiceImpl implements CrearPedidoService {
             errores.add("El cliente no existe");
         }
 
-
-
         Set<PedidoDetalle> detalles= this.validarPedidoDetalle(pedido.getDetalle(),errores);
 
         if(errores.size() > 0){
@@ -70,7 +69,7 @@ public class CrearPedidoServiceImpl implements CrearPedidoService {
 
         Pedido pedidoNuevo = new Pedido();
         pedidoNuevo.setCliente(cliente);
-        //pedidoNuevo.setDetalle(detalles);
+        pedidoNuevo.setFecha(new Date());
         pedidoNuevo.setTotal(total);
         Pedido predidoCreado = pedidoRepository.save(pedidoNuevo);
         detalles = detalles.stream().map(detalle -> {
